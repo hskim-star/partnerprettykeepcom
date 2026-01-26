@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - Partner Pretty Keep</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">P</span>
+      <div>
+        <p class="brand-name">Partner Pretty Keep</p>
+        <p class="brand-subtitle" data-i18n="brandSubtitle">회원가입</p>
+      </div>
+    </div>
+    <div class="lang-switch">
+      <label for="lang-select" data-i18n="languageLabel">언어</label>
+      <select id="lang-select" name="lang">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="signup-shell">
+    <div class="signup-layout">
+      <section class="signup-panel">
+        <h1 id="signup-title" data-i18n="title">가입 유형을 선택하세요</h1>
+        <p class="signup-caption" data-i18n="caption">파트너 또는 내부 직원 계정으로 가입할 수 있습니다.</p>
+        <ul class="panel-list">
+          <li data-i18n="signupStepOne">파트너/직원 유형 선택</li>
+          <li data-i18n="signupStepTwo">기업/개인 정보 분리 관리</li>
+          <li data-i18n="signupStepThree">승인 후 정산 및 운영 시작</li>
+        </ul>
+      </section>
+
+      <section class="signup-card" aria-labelledby="signup-title">
+        <div class="stepper" role="tablist" aria-label="signup steps">
+          <button class="step-item is-active" type="button" data-step="1" aria-selected="true" data-i18n="stepOneLabel">1. 약관 동의</button>
+          <button class="step-item" type="button" data-step="2" aria-selected="false" data-i18n="stepTwoLabel">2. 가입 정보</button>
+        </div>
+
+        <section class="step-panel" data-step-panel="1">
+          <h2 class="step-title" data-i18n="termsTitle">약관 및 개인정보 수집·이용 동의</h2>
+          <p class="step-caption" data-i18n="termsCaption">서비스 이용을 위해 아래 약관에 동의해 주세요.</p>
+
+          <div class="terms-box">
+            <h3 data-i18n="termsServiceTitle">서비스 이용약관 (요약)</h3>
+            <ul>
+              <li data-i18n="termsServiceItem1">파트너/직원 계정은 승인 후 활성화됩니다.</li>
+              <li data-i18n="termsServiceItem2">허위 정보로 가입 시 서비스 이용이 제한됩니다.</li>
+              <li data-i18n="termsServiceItem3">민감정보는 승인 이후 별도 화면에서 입력합니다.</li>
+            </ul>
+          </div>
+
+          <div class="terms-box">
+            <h3 data-i18n="termsPrivacyTitle">개인정보 수집·이용 (요약)</h3>
+            <ul>
+              <li data-i18n="termsPrivacyItem1">필수 항목: 이름, 이메일, 연락처, 소속 정보</li>
+              <li data-i18n="termsPrivacyItem2">이용 목적: 파트너 등록, 정산, 고객지원</li>
+              <li data-i18n="termsPrivacyItem3">보관 기간: 관련 법령 및 서비스 정책에 따름</li>
+            </ul>
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox" id="agree-all">
+            <span data-i18n="agreeAll">전체 약관에 동의합니다.</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" class="agree-item">
+            <span data-i18n="agreeService">서비스 이용약관 동의 (필수)</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" class="agree-item">
+            <span data-i18n="agreePrivacy">개인정보 수집·이용 동의 (필수)</span>
+          </label>
+
+          <div class="form-actions">
+            <button class="primary-button" type="button" id="go-step-2" disabled data-i18n="nextStep">다음 단계</button>
+          </div>
+        </section>
+
+        <section class="step-panel is-hidden" data-step-panel="2">
+        <section class="choice-grid">
+          <a class="choice-card" data-type="partner" data-partner-type="company" href="{{ url_for('signup') }}?type=partner&partner_type=company">
+            <h2 data-i18n="partnerCompanyTitle">파트너 · 기업</h2>
+            <p data-i18n="partnerCompanyDesc">법인/사업자 파트너 등록</p>
+          </a>
+          <a class="choice-card" data-type="partner" data-partner-type="individual" href="{{ url_for('signup') }}?type=partner&partner_type=individual">
+            <h2 data-i18n="partnerIndividualTitle">파트너 · 개인</h2>
+            <p data-i18n="partnerIndividualDesc">개인 파트너 등록</p>
+          </a>
+          <a class="choice-card" data-type="staff" href="{{ url_for('signup') }}?type=staff">
+            <h2 data-i18n="staffTitle">직원 가입</h2>
+            <p data-i18n="staffDesc">내부 직원 계정 생성</p>
+          </a>
+        </section>
+
+        <section class="form-section">
+          {% if message %}
+          <div class="alert success">{{ message }}</div>
+          {% endif %}
+          {% if error %}
+          <div class="alert error">{{ error }}</div>
+          {% endif %}
+          <div class="form-divider">
+            <p class="form-hint" data-i18n="formHint">아래에서 가입 정보를 입력하세요.</p>
+          </div>
+
+          <form class="signup-form" method="post" action="#" novalidate>
+            <input type="hidden" name="signup_type" id="signup-type" value="{{ signup_type or '' }}">
+            <input type="hidden" name="partner_type" id="partner-type" value="{{ partner_type or '' }}">
+
+            <div class="form-block" data-form="partner-company">
+              <h3 data-i18n="companyInfoTitle">기업 파트너 정보</h3>
+              <div class="form-grid">
+                <label class="field">
+                  <span data-i18n="companyLegalName">법인명</span>
+                  <input type="text" name="legal_name" placeholder="Pretty Keep Co., Ltd." data-i18n-placeholder="companyLegalNamePlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="companyRegNo">사업자등록번호</span>
+                  <input type="text" name="business_registration_no" placeholder="000-00-00000" data-i18n-placeholder="companyRegNoPlaceholder" data-validate="bizno">
+                  <span class="field-error" data-i18n="bizNoError">사업자등록번호 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="companyRepName">대표자명</span>
+                  <input type="text" name="representative_name" placeholder="홍길동" data-i18n-placeholder="companyRepNamePlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="contactName">담당자 이름</span>
+                  <input type="text" name="contact_name" placeholder="김파트너" data-i18n-placeholder="contactNamePlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="contactEmail">담당자 이메일</span>
+                  <input type="email" name="contact_email" placeholder="partner@company.com" data-i18n-placeholder="contactEmailPlaceholder" data-validate="email">
+                  <span class="field-error" data-i18n="emailError">이메일 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="contactPhone">담당자 연락처</span>
+                  <input type="tel" name="contact_phone" placeholder="010-0000-0000" data-i18n-placeholder="contactPhonePlaceholder" data-validate="phone">
+                  <span class="field-error" data-i18n="phoneError">전화번호 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="companyAddress1">주소</span>
+                  <input type="text" name="address_line1" placeholder="서울시 강남구 ..." data-i18n-placeholder="companyAddress1Placeholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="companyAddress2">상세 주소</span>
+                  <input type="text" name="address_line2" placeholder="빌딩/층/호수" data-i18n-placeholder="companyAddress2Placeholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="taxEmail">세금계산서 이메일</span>
+                  <input type="email" name="tax_email" placeholder="tax@company.com" data-i18n-placeholder="taxEmailPlaceholder" data-validate="email">
+                  <span class="field-error" data-i18n="emailError">이메일 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="country">국가</span>
+                  <input type="text" name="country" placeholder="Korea" data-i18n-placeholder="countryPlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="region">지역</span>
+                  <input type="text" name="region" placeholder="Seoul" data-i18n-placeholder="regionPlaceholder">
+                </label>
+              </div>
+            </div>
+
+            <div class="form-block" data-form="partner-individual">
+              <h3 data-i18n="individualInfoTitle">개인 파트너 정보</h3>
+              <div class="form-grid">
+                <label class="field">
+                  <span data-i18n="fullName">이름</span>
+                  <input type="text" name="name" placeholder="홍길동" data-i18n-placeholder="fullNamePlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="contactEmail">이메일</span>
+                  <input type="email" name="contact_email" placeholder="name@email.com" data-i18n-placeholder="contactEmailPersonalPlaceholder" data-validate="email">
+                  <span class="field-error" data-i18n="emailError">이메일 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="contactPhone">연락처</span>
+                  <input type="tel" name="contact_phone" placeholder="010-0000-0000" data-i18n-placeholder="contactPhonePlaceholder" data-validate="phone">
+                  <span class="field-error" data-i18n="phoneError">전화번호 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="nationality">국적</span>
+                  <input type="text" name="nationality" placeholder="Korea" data-i18n-placeholder="nationalityPlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="residencyStatus">거주 상태</span>
+                  <input type="text" name="residency_status" placeholder="거주 / 비거주" data-i18n-placeholder="residencyStatusPlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="country">국가</span>
+                  <input type="text" name="country" placeholder="Korea" data-i18n-placeholder="countryPlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="region">지역</span>
+                  <input type="text" name="region" placeholder="Seoul" data-i18n-placeholder="regionPlaceholder">
+                </label>
+              </div>
+            </div>
+
+            <div class="form-block" data-form="staff">
+              <h3 data-i18n="staffInfoTitle">직원 정보</h3>
+              <div class="form-grid">
+                <label class="field">
+                  <span data-i18n="fullName">이름</span>
+                  <input type="text" name="name" placeholder="김직원" data-i18n-placeholder="staffNamePlaceholder">
+                </label>
+                <label class="field">
+                  <span data-i18n="email">이메일</span>
+                  <input type="email" name="email" placeholder="staff@prettykeep.com" data-i18n-placeholder="staffEmailPlaceholder" data-validate="email">
+                  <span class="field-error" data-i18n="emailError">이메일 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="phone">연락처</span>
+                  <input type="tel" name="phone" placeholder="010-0000-0000" data-i18n-placeholder="contactPhonePlaceholder" data-validate="phone">
+                  <span class="field-error" data-i18n="phoneError">전화번호 형식을 확인해 주세요.</span>
+                </label>
+                <label class="field">
+                  <span data-i18n="role">역할</span>
+                  <input type="text" name="role" placeholder="ops / finance / sales" data-i18n-placeholder="rolePlaceholder">
+                </label>
+              </div>
+            </div>
+
+            <p class="form-note" data-i18n="formNote">
+              계좌/민감 식별정보는 가입 승인 후 별도 화면에서 입력합니다.
+            </p>
+
+            <div class="form-actions">
+              <button class="ghost-button" type="button" id="fill-test" data-i18n="fillTest">테스트 데이터 입력</button>
+              <button class="primary-button" type="submit" data-i18n="submitButton">가입 신청하기</button>
+              <a class="ghost-button" href="{{ url_for('login') }}" data-i18n="backToLogin">로그인으로 돌아가기</a>
+            </div>
+          </form>
+        </section>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const translations = {
+      ko: {
+        languageLabel: "언어",
+        brandSubtitle: "회원가입",
+        title: "가입 유형을 선택하세요",
+        caption: "파트너 또는 내부 직원 계정으로 가입할 수 있습니다.",
+        signupStepOne: "파트너/직원 유형 선택",
+        signupStepTwo: "기업/개인 정보 분리 관리",
+        signupStepThree: "승인 후 정산 및 운영 시작",
+        partnerCompanyTitle: "파트너 · 기업",
+        partnerCompanyDesc: "법인/사업자 파트너 등록",
+        partnerIndividualTitle: "파트너 · 개인",
+        partnerIndividualDesc: "개인 파트너 등록",
+        staffTitle: "직원 가입",
+        staffDesc: "내부 직원 계정 생성",
+        formHint: "아래에서 가입 정보를 입력하세요.",
+        stepOneLabel: "1. 약관 동의",
+        stepTwoLabel: "2. 가입 정보",
+        termsTitle: "약관 및 개인정보 수집·이용 동의",
+        termsCaption: "서비스 이용을 위해 아래 약관에 동의해 주세요.",
+        termsServiceTitle: "서비스 이용약관 (요약)",
+        termsServiceItem1: "파트너/직원 계정은 승인 후 활성화됩니다.",
+        termsServiceItem2: "허위 정보로 가입 시 서비스 이용이 제한됩니다.",
+        termsServiceItem3: "민감정보는 승인 이후 별도 화면에서 입력합니다.",
+        termsPrivacyTitle: "개인정보 수집·이용 (요약)",
+        termsPrivacyItem1: "필수 항목: 이름, 이메일, 연락처, 소속 정보",
+        termsPrivacyItem2: "이용 목적: 파트너 등록, 정산, 고객지원",
+        termsPrivacyItem3: "보관 기간: 관련 법령 및 서비스 정책에 따름",
+        agreeAll: "전체 약관에 동의합니다.",
+        agreeService: "서비스 이용약관 동의 (필수)",
+        agreePrivacy: "개인정보 수집·이용 동의 (필수)",
+        nextStep: "다음 단계",
+        companyInfoTitle: "기업 파트너 정보",
+        companyLegalName: "회사명",
+        companyRegNo: "사업자등록번호",
+        companyRepName: "대표자명",
+        contactName: "담당자 이름",
+        contactEmail: "담당자 이메일",
+        contactPhone: "담당자 연락처",
+        companyAddress1: "주소",
+        companyAddress2: "상세 주소",
+        taxEmail: "세금계산서 이메일",
+        country: "국가",
+        region: "지역",
+        companyLegalNamePlaceholder: "Pretty Keep Co., Ltd.",
+        companyRegNoPlaceholder: "000-00-00000",
+        companyRepNamePlaceholder: "홍길동",
+        contactNamePlaceholder: "김파트너",
+        contactEmailPlaceholder: "partner@company.com",
+        contactEmailPersonalPlaceholder: "name@email.com",
+        contactPhonePlaceholder: "010-0000-0000",
+        companyAddress1Placeholder: "서울시 강남구 ...",
+        companyAddress2Placeholder: "빌딩/층/호수",
+        taxEmailPlaceholder: "tax@company.com",
+        countryPlaceholder: "Korea",
+        regionPlaceholder: "Seoul",
+        individualInfoTitle: "개인 파트너 정보",
+        fullName: "이름",
+        nationality: "국적",
+        residencyStatus: "거주 상태",
+        staffInfoTitle: "직원 정보",
+        email: "이메일",
+        phone: "연락처",
+        role: "역할",
+        fullNamePlaceholder: "홍길동",
+        nationalityPlaceholder: "Korea",
+        residencyStatusPlaceholder: "거주 / 비거주",
+        staffNamePlaceholder: "김직원",
+        staffEmailPlaceholder: "staff@prettykeep.com",
+        rolePlaceholder: "ops / finance / sales",
+        formNote: "계좌/민감 식별정보는 가입 승인 후 별도 화면에서 입력합니다.",
+        emailError: "이메일 형식을 확인해 주세요.",
+        phoneError: "전화번호 형식을 확인해 주세요.",
+        bizNoError: "사업자등록번호 형식을 확인해 주세요.",
+        fillTest: "테스트 데이터 입력",
+        submitButton: "가입 신청하기",
+        backToLogin: "로그인으로 돌아가기"
+      },
+      en: {
+        languageLabel: "Language",
+        brandSubtitle: "Sign up",
+        title: "Choose your signup type",
+        caption: "Register as a partner or internal staff account.",
+        signupStepOne: "Choose partner or staff type",
+        signupStepTwo: "Separate company and individual info",
+        signupStepThree: "Get approved and start operations",
+        partnerCompanyTitle: "Partner · Company",
+        partnerCompanyDesc: "Register a corporate partner",
+        partnerIndividualTitle: "Partner · Individual",
+        partnerIndividualDesc: "Register an individual partner",
+        staffTitle: "Staff signup",
+        staffDesc: "Create an internal staff account",
+        formHint: "Enter the registration details below.",
+        stepOneLabel: "1. Agree to terms",
+        stepTwoLabel: "2. Signup details",
+        termsTitle: "Terms and privacy consent",
+        termsCaption: "Please agree to the terms below to continue.",
+        termsServiceTitle: "Service terms (summary)",
+        termsServiceItem1: "Partner/staff accounts activate after approval.",
+        termsServiceItem2: "Providing false information may restrict access.",
+        termsServiceItem3: "Sensitive info is collected after approval.",
+        termsPrivacyTitle: "Privacy collection (summary)",
+        termsPrivacyItem1: "Required: name, email, phone, organization info",
+        termsPrivacyItem2: "Purpose: partner registration, settlement, support",
+        termsPrivacyItem3: "Retention: per law and policy",
+        agreeAll: "I agree to all terms.",
+        agreeService: "Agree to service terms (required)",
+        agreePrivacy: "Agree to privacy collection (required)",
+        nextStep: "Next step",
+        companyInfoTitle: "Company partner info",
+        companyLegalName: "Legal name",
+        companyRegNo: "Business registration no.",
+        companyRepName: "Representative",
+        contactName: "Contact name",
+        contactEmail: "Contact email",
+        contactPhone: "Contact phone",
+        companyAddress1: "Address",
+        companyAddress2: "Address details",
+        taxEmail: "Tax invoice email",
+        country: "Country",
+        region: "Region",
+        companyLegalNamePlaceholder: "Pretty Keep Co., Ltd.",
+        companyRegNoPlaceholder: "000-00-00000",
+        companyRepNamePlaceholder: "Jane Doe",
+        contactNamePlaceholder: "Partner manager",
+        contactEmailPlaceholder: "partner@company.com",
+        contactEmailPersonalPlaceholder: "name@email.com",
+        contactPhonePlaceholder: "+82-10-0000-0000",
+        companyAddress1Placeholder: "123, Teheran-ro",
+        companyAddress2Placeholder: "Building/Floor/Suite",
+        taxEmailPlaceholder: "tax@company.com",
+        countryPlaceholder: "Korea",
+        regionPlaceholder: "Seoul",
+        individualInfoTitle: "Individual partner info",
+        fullName: "Full name",
+        nationality: "Nationality",
+        residencyStatus: "Residency status",
+        staffInfoTitle: "Staff info",
+        email: "Email",
+        phone: "Phone",
+        role: "Role",
+        fullNamePlaceholder: "Jane Doe",
+        nationalityPlaceholder: "Korea",
+        residencyStatusPlaceholder: "Resident / Non-resident",
+        staffNamePlaceholder: "Staff name",
+        staffEmailPlaceholder: "staff@prettykeep.com",
+        rolePlaceholder: "ops / finance / sales",
+        formNote: "Bank and sensitive IDs are collected after approval.",
+        emailError: "Please check the email format.",
+        phoneError: "Please check the phone number format.",
+        bizNoError: "Please check the business registration format.",
+        fillTest: "Fill test data",
+        submitButton: "Submit signup",
+        backToLogin: "Back to login"
+      },
+      zh: {
+        languageLabel: "语言",
+        brandSubtitle: "注册",
+        title: "请选择注册类型",
+        caption: "可注册为合作伙伴或内部员工账户。",
+        signupStepOne: "选择合作伙伴或员工类型",
+        signupStepTwo: "区分企业与个人信息",
+        signupStepThree: "审核通过后开始运营",
+        partnerCompanyTitle: "合作伙伴 · 企业",
+        partnerCompanyDesc: "注册企业合作伙伴",
+        partnerIndividualTitle: "合作伙伴 · 个人",
+        partnerIndividualDesc: "注册个人合作伙伴",
+        staffTitle: "员工注册",
+        staffDesc: "创建内部员工账户",
+        formHint: "请在下方填写注册信息。",
+        stepOneLabel: "1. 同意条款",
+        stepTwoLabel: "2. 注册信息",
+        termsTitle: "条款与隐私同意",
+        termsCaption: "请先同意以下条款以继续。",
+        termsServiceTitle: "服务条款（摘要）",
+        termsServiceItem1: "合作伙伴/员工账号审核后启用。",
+        termsServiceItem2: "提供虚假信息将限制使用。",
+        termsServiceItem3: "敏感信息在审核通过后填写。",
+        termsPrivacyTitle: "隐私收集（摘要）",
+        termsPrivacyItem1: "必填：姓名、邮箱、电话、所属信息",
+        termsPrivacyItem2: "用途：合作伙伴注册、结算、支持",
+        termsPrivacyItem3: "保存期限：遵循法律与政策",
+        agreeAll: "我同意全部条款。",
+        agreeService: "同意服务条款（必选）",
+        agreePrivacy: "同意隐私收集（必选）",
+        nextStep: "下一步",
+        companyInfoTitle: "企业合作伙伴信息",
+        companyLegalName: "公司名称",
+        companyRegNo: "营业执照号",
+        companyRepName: "法人代表",
+        contactName: "联系人姓名",
+        contactEmail: "联系人邮箱",
+        contactPhone: "联系人电话",
+        companyAddress1: "地址",
+        companyAddress2: "详细地址",
+        taxEmail: "税务邮箱",
+        country: "国家",
+        region: "地区",
+        companyLegalNamePlaceholder: "Pretty Keep Co., Ltd.",
+        companyRegNoPlaceholder: "000-00-00000",
+        companyRepNamePlaceholder: "王小明",
+        contactNamePlaceholder: "合作负责人",
+        contactEmailPlaceholder: "partner@company.com",
+        contactEmailPersonalPlaceholder: "name@email.com",
+        contactPhonePlaceholder: "010-0000-0000",
+        companyAddress1Placeholder: "首尔市江南区 ...",
+        companyAddress2Placeholder: "楼层/房号",
+        taxEmailPlaceholder: "tax@company.com",
+        countryPlaceholder: "韩国",
+        regionPlaceholder: "首尔",
+        individualInfoTitle: "个人合作伙伴信息",
+        fullName: "姓名",
+        nationality: "国籍",
+        residencyStatus: "居住状态",
+        staffInfoTitle: "员工信息",
+        email: "邮箱",
+        phone: "电话",
+        role: "角色",
+        fullNamePlaceholder: "王小明",
+        nationalityPlaceholder: "韩国",
+        residencyStatusPlaceholder: "居住 / 非居住",
+        staffNamePlaceholder: "员工姓名",
+        staffEmailPlaceholder: "staff@prettykeep.com",
+        rolePlaceholder: "ops / finance / sales",
+        formNote: "账户与敏感证件信息将在审核通过后填写。",
+        emailError: "请检查邮箱格式。",
+        phoneError: "请检查电话号码格式。",
+        bizNoError: "请检查营业执照号格式。",
+        fillTest: "填充测试数据",
+        submitButton: "提交注册",
+        backToLogin: "返回登录"
+      }
+    };
+
+    const langSelect = document.getElementById("lang-select");
+    const setLang = (lang) => {
+      const dict = translations[lang] || translations.ko;
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+          el.innerHTML = dict[key];
+        }
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (dict[key]) {
+          el.setAttribute("placeholder", dict[key]);
+        }
+      });
+      localStorage.setItem("login-lang", lang);
+    };
+
+    const savedLang = localStorage.getItem("login-lang") || "ko";
+    langSelect.value = savedLang;
+    setLang(savedLang);
+    langSelect.addEventListener("change", (event) => setLang(event.target.value));
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const signupType = urlParams.get("type") || "{{ signup_type or '' }}";
+    const partnerType = urlParams.get("partner_type") || "{{ partner_type or '' }}";
+
+    const typeInput = document.getElementById("signup-type");
+    const partnerInput = document.getElementById("partner-type");
+    typeInput.value = signupType;
+    partnerInput.value = partnerType;
+
+    const updateFormVisibility = () => {
+      document.querySelectorAll(".form-block").forEach((block) => {
+        block.classList.add("is-hidden");
+      });
+
+      if (signupType === "partner" && partnerType === "company") {
+        document.querySelector('[data-form="partner-company"]').classList.remove("is-hidden");
+      } else if (signupType === "partner" && partnerType === "individual") {
+        document.querySelector('[data-form="partner-individual"]').classList.remove("is-hidden");
+      } else if (signupType === "staff") {
+        document.querySelector('[data-form="staff"]').classList.remove("is-hidden");
+      }
+    };
+
+    document.querySelectorAll(".choice-card").forEach((card) => {
+      const type = card.getAttribute("data-type");
+      const pType = card.getAttribute("data-partner-type");
+      const isActive = type === signupType && (type !== "partner" || pType === partnerType);
+      card.classList.toggle("is-active", isActive);
+    });
+
+    updateFormVisibility();
+
+    const fillTestButton = document.getElementById("fill-test");
+    const getVisibleBlock = (selector) => document.querySelector(selector);
+
+    const fillTestData = () => {
+      if (signupType === "partner" && partnerType === "company") {
+        const block = getVisibleBlock('[data-form="partner-company"]');
+        if (!block) return;
+        block.querySelector('[name="legal_name"]').value = "Pretty Keep Co., Ltd.";
+        block.querySelector('[name="business_registration_no"]').value = "123-45-67890";
+        block.querySelector('[name="representative_name"]').value = "홍길동";
+        block.querySelector('[name="contact_name"]').value = "김파트너";
+        block.querySelector('[name="contact_email"]').value = "partner@company.com";
+        block.querySelector('[name="contact_phone"]').value = "010-0000-0000";
+        block.querySelector('[name="address_line1"]').value = "서울시 강남구 테헤란로 123";
+        block.querySelector('[name="address_line2"]').value = "12층 1201호";
+        block.querySelector('[name="tax_email"]').value = "tax@company.com";
+        block.querySelector('[name="country"]').value = "Korea";
+        block.querySelector('[name="region"]').value = "Seoul";
+      } else if (signupType === "partner" && partnerType === "individual") {
+        const block = getVisibleBlock('[data-form="partner-individual"]');
+        if (!block) return;
+        block.querySelector('[name="name"]').value = "김개인";
+        block.querySelector('[name="contact_email"]').value = "individual@prettykeep.com";
+        block.querySelector('[name="contact_phone"]').value = "010-1111-2222";
+        block.querySelector('[name="nationality"]').value = "Korea";
+        block.querySelector('[name="residency_status"]').value = "거주";
+        block.querySelector('[name="country"]').value = "Korea";
+        block.querySelector('[name="region"]').value = "Busan";
+      } else if (signupType === "staff") {
+        const block = getVisibleBlock('[data-form="staff"]');
+        if (!block) return;
+        block.querySelector('[name="name"]').value = "박직원";
+        block.querySelector('[name="email"]').value = "staff@prettykeep.com";
+        block.querySelector('[name="phone"]').value = "010-3333-4444";
+        block.querySelector('[name="role"]').value = "staff_ops";
+      }
+      document.querySelectorAll("[data-validate]").forEach((input) => validateInput(input));
+    };
+
+    fillTestButton.addEventListener("click", fillTestData);
+
+    const validators = {
+      email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      phone: (value) => /^\+?[0-9][0-9\s-]{7,}$/.test(value),
+      bizno: (value) => /^\d{3}-\d{2}-\d{5}$/.test(value)
+    };
+
+    const showError = (field, show) => {
+      const error = field.querySelector(".field-error");
+      if (error) {
+        error.classList.toggle("is-visible", show);
+      }
+    };
+
+    const validateInput = (input) => {
+      const type = input.getAttribute("data-validate");
+      if (!type || !validators[type]) return true;
+      const value = input.value.trim();
+      if (value === "") {
+        showError(input.closest(".field"), false);
+        return true;
+      }
+      const ok = validators[type](value);
+      showError(input.closest(".field"), !ok);
+      return ok;
+    };
+
+    document.querySelectorAll("[data-validate]").forEach((input) => {
+      input.addEventListener("input", () => validateInput(input));
+      input.addEventListener("blur", () => validateInput(input));
+    });
+
+    document.querySelector(".signup-form").addEventListener("submit", (event) => {
+      let ok = true;
+      document.querySelectorAll("[data-validate]").forEach((input) => {
+        const visibleBlock = input.closest(".form-block");
+        if (visibleBlock && !visibleBlock.classList.contains("is-hidden")) {
+          ok = validateInput(input) && ok;
+        }
+      });
+      if (!ok) {
+        event.preventDefault();
+      }
+    });
+
+    const stepButtons = document.querySelectorAll(".step-item");
+    const panels = document.querySelectorAll(".step-panel");
+    const gotoStep = (step) => {
+      stepButtons.forEach((btn) => {
+        const active = btn.getAttribute("data-step") === step;
+        btn.classList.toggle("is-active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      panels.forEach((panel) => {
+        panel.classList.toggle("is-hidden", panel.getAttribute("data-step-panel") !== step);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const agreeAll = document.getElementById("agree-all");
+    const agreeItems = document.querySelectorAll(".agree-item");
+    const nextButton = document.getElementById("go-step-2");
+
+    const updateAgreeState = () => {
+      const allChecked = Array.from(agreeItems).every((item) => item.checked);
+      agreeAll.checked = allChecked;
+      nextButton.disabled = !allChecked;
+    };
+
+    agreeAll.addEventListener("change", () => {
+      agreeItems.forEach((item) => {
+        item.checked = agreeAll.checked;
+      });
+      updateAgreeState();
+    });
+
+    agreeItems.forEach((item) => {
+      item.addEventListener("change", updateAgreeState);
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (!nextButton.disabled) {
+        gotoStep("2");
+      }
+    });
+
+    stepButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const step = btn.getAttribute("data-step");
+        if (step === "1") {
+          gotoStep("1");
+        }
+      });
+    });
+
+    gotoStep("1");
+  </script>
+</body>
+</html>
