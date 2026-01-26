@@ -209,7 +209,7 @@ def signup():
 
             if error is None:
                 conn.commit()
-                message = "가입 신청이 완료되었습니다."
+                return redirect(url_for("login"))
         except Exception as exc:
             if conn:
                 conn.rollback()
