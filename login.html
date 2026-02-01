@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Partner Pretty Keep</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">P</span>
+      <div>
+        <p class="brand-name">Partner Pretty Keep</p>
+        <p class="brand-subtitle" data-i18n="brandSubtitle">Partner platform login</p>
+      </div>
+    </div>
+    <div class="lang-switch">
+      <label for="lang-select" data-i18n="languageLabel">Language</label>
+      <select id="lang-select" name="lang">
+        <option value="ko">Korean</option>
+        <option value="en">English</option>
+        <option value="zh">Chinese</option>
+      </select>
+    </div>
+  </header>
+  <main class="login-shell">
+    <div class="login-layout">
+      <section class="login-panel">
+        <h1 id="login-title" data-i18n="title">Sign in to your account</h1>
+        <p class="login-caption" data-i18n="caption">Secure access for settlements and partner management.</p>
+        <ul class="panel-list">
+          <li data-i18n="featureOne">Quick settlement and reporting</li>
+          <li data-i18n="featureTwo">Partner and staff role separation</li>
+          <li data-i18n="featureThree">Multilingual support for global teams</li>
+        </ul>
+      </section>
+      <section class="login-card" aria-labelledby="login-title">
+        {% if message %}
+        <div class="alert success">{{ message }}</div>
+        {% endif %}
+        <form method="post" action="{{ url_for('login') }}" class="login-form">
+          <label class="field">
+            <span data-i18n="emailLabel">Email</span>
+            <input type="email" name="email" placeholder="name@company.com" data-i18n-placeholder="emailPlaceholder" required>
+          </label>
+          <label class="field">
+            <span data-i18n="passwordLabel">Password</span>
+            <input type="password" name="password" placeholder="********" data-i18n-placeholder="passwordPlaceholder" required>
+          </label>
+          <button class="primary-button" type="submit" data-i18n="loginButton">Sign in</button>
+          <a class="ghost-button" href="{{ url_for('signup') }}" data-i18n="signupButton">Create account</a>
+          <div class="helper-links">
+            <a class="text-link" href="{{ url_for('forgot_password') }}" data-i18n="forgotPassword">Forgot password?</a>
+          </div>
+        </form>
+        <footer class="login-footer" data-i18n="footer">Having trouble signing in? <span>Contact your administrator.</span></footer>
+      </section>
+    </div>
+  </main>
+  <script>
+    const translations = {
+      ko: {
+        languageLabel: "언어",
+        brandSubtitle: "파트너 플랫폼 로그인",
+        title: "계정에 로그인하세요",
+        caption: "정산 및 파트너 관리를 위한 보안 로그인입니다.",
+        featureOne: "빠른 정산 및 리포팅",
+        featureTwo: "파트너/직원 권한 분리",
+        featureThree: "글로벌 팀을 위한 다국어 지원",
+        emailLabel: "이메일",
+        emailPlaceholder: "name@company.com",
+        passwordLabel: "비밀번호",
+        passwordPlaceholder: "********",
+        loginButton: "로그인",
+        signupButton: "회원가입",
+        forgotPassword: "비밀번호를 잊으셨나요?",
+        footer: "로그인에 문제가 있나요? <span>관리자에게 문의하세요.</span>"
+      },
+      en: {
+        languageLabel: "Language",
+        brandSubtitle: "Partner platform login",
+        title: "Sign in to your account",
+        caption: "Secure access for settlements and partner management.",
+        featureOne: "Quick settlement and reporting",
+        featureTwo: "Partner and staff role separation",
+        featureThree: "Multilingual support for global teams",
+        emailLabel: "Email",
+        emailPlaceholder: "name@company.com",
+        passwordLabel: "Password",
+        passwordPlaceholder: "********",
+        loginButton: "Sign in",
+        signupButton: "Create account",
+        forgotPassword: "Forgot password?",
+        footer: "Having trouble signing in? <span>Contact your administrator.</span>"
+      },
+      zh: {
+        languageLabel: "语言",
+        brandSubtitle: "合作伙伴平台登录",
+        title: "登录到您的账户",
+        caption: "用于结算和合作伙伴管理的安全登录。",
+        featureOne: "快速结算与报表",
+        featureTwo: "合作伙伴/员工权限分离",
+        featureThree: "面向国际团队的多语言支持",
+        emailLabel: "电子邮箱",
+        emailPlaceholder: "name@company.com",
+        passwordLabel: "密码",
+        passwordPlaceholder: "********",
+        loginButton: "登录",
+        signupButton: "创建账户",
+        forgotPassword: "忘记密码？",
+        footer: "登录遇到问题？ <span>请联系管理员。</span>"
+      }
+    };
+
+    const langSelect = document.getElementById("lang-select");
+    const setLang = (lang) => {
+      const dict = translations[lang] || translations.ko;
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+          el.innerHTML = dict[key];
+        }
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (dict[key]) {
+          el.setAttribute("placeholder", dict[key]);
+        }
+      });
+      localStorage.setItem("partner_lang", lang);
+    };
+
+    const savedLang = localStorage.getItem("partner_lang") || "ko";
+    langSelect.value = savedLang;
+    setLang(savedLang);
+    langSelect.addEventListener("change", (event) => setLang(event.target.value));
+  </script>
+</body>
+</html>
